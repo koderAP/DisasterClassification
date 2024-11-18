@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from sklearn.metrics import f1_score
 import numpy as np
 import tqdm
+from PIL import Image
 
 
 
@@ -91,10 +92,11 @@ def train_model(train_loader,val_loader, device, epochs=10):
 
 
 
-def get_original_image_from_loader(loader, index):
-    dataset = loader.dataset
-    original_image, _ = dataset.imgs[index]
-    return original_image
+def get_original_image_from_loader(dataloader, idx):
+    dataset = dataloader.dataset
+    image_path, _ = dataset.imgs[idx] 
+    image = Image.open(image_path).convert("RGB")
+    return image
 
 
 def get_misclassified_images(model, data_loader, device):

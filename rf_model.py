@@ -2,6 +2,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 import numpy as np
 import tqdm
+from PIL import Image
 
 
 rf_classifier = RandomForestClassifier(n_estimators=100, max_depth=20, random_state=42)
@@ -16,8 +17,9 @@ def train_model(train_features, train_labels, val_features, val_labels):
 
 def get_original_image_from_loader(dataloader, idx):
     dataset = dataloader.dataset
-    original_image, _ = dataset.imgs[idx]
-    return original_image
+    image_path, _ = dataset.imgs[idx] 
+    image = Image.open(image_path).convert("RGB")
+    return image
 
 
 def get_missclassified_images(rf_classifier, dataloader, features, labels):

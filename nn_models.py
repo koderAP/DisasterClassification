@@ -2,6 +2,7 @@ from torchvision import models
 import torch.nn as nn
 import torch
 from sklearn.metrics import f1_score
+from PIL import Image
 
 
 def prepare_model(model_name, num_classes=4):
@@ -161,10 +162,11 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
     return best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores
 
 
-def get_original_image_from_loader(loader, index):
-    dataset = loader.dataset
-    original_image, _ = dataset.imgs[index]
-    return original_image
+def get_original_image_from_loader(dataloader, idx):
+    dataset = dataloader.dataset
+    image_path, _ = dataset.imgs[idx] 
+    image = Image.open(image_path).convert("RGB")
+    return image
 
 def get_misclassified_images(model, data_loader, device):
     misclassified_images = []

@@ -2,6 +2,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.tree import DecisionTreeClassifier
 import tqdm
+from PIL import Image
 
 ada_classifier = AdaBoostClassifier(
     base_estimator=DecisionTreeClassifier(max_depth=2),
@@ -23,8 +24,9 @@ def get_feature_importance():
 
 def get_original_image_from_loader(dataloader, idx):
     dataset = dataloader.dataset
-    original_image, _ = dataset.imgs[idx]
-    return original_image
+    image_path, _ = dataset.imgs[idx] 
+    image = Image.open(image_path).convert("RGB")
+    return image
 
 
 def get_missclassified_images(ada_classifier, dataloader, features, labels):

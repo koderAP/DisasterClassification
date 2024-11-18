@@ -1,5 +1,6 @@
 from sklearn import svm
 import numpy as np
+from PIL import Image
 
 
 
@@ -16,8 +17,9 @@ def train_model(train_features, train_labels, val_features, val_labels):
 
 def get_original_image_from_loader(dataloader, idx):
     dataset = dataloader.dataset
-    original_image, _ = dataset.imgs[idx]
-    return original_image
+    image_path, _ = dataset.imgs[idx] 
+    image = Image.open(image_path).convert("RGB")
+    return image
 
 def get_missclassified_images(svm_model, dataloader, features, labels):
     misclassified_images = []
