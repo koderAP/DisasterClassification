@@ -99,6 +99,7 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
     best_model = None
 
     for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}/{epochs}...", end='\r')
         model.train()
         running_loss = 0.0
         correct = 0

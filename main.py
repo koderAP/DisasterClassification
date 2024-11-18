@@ -43,6 +43,7 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
     results = {}
 
     for model_name in model_names:
+        print(f"Training {model_name} model")
         best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores = nnm.train_model_nn(model_name, train_loader, val_loader, device, num_epochs)
 
         misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)

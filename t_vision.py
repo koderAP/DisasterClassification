@@ -4,6 +4,7 @@ from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 from sklearn.metrics import f1_score
 import numpy as np
+import tqdm
 
 
 
@@ -26,6 +27,7 @@ def train_model(train_loader,val_loader, device, epochs=10):
     best_model = None
 
     for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}/{epochs}...", end='\r')
         model.train()
         running_loss = 0.0
         correct = 0

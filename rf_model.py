@@ -1,6 +1,7 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 import numpy as np
+import tqdm
 
 
 rf_classifier = RandomForestClassifier(n_estimators=100, max_depth=20, random_state=42)
@@ -22,7 +23,7 @@ def get_original_image_from_loader(dataloader, idx):
 def get_missclassified_images(rf_classifier, dataloader, features, labels):
     misclassified_images = []
     predictions = rf_classifier.predict(features)
-    for i in range(len(predictions)):
+    for i in tqdm.tqdm(range(len(predictions)), desc="Misclassified images fetching"):
         if predictions[i] != labels[i]:
             image = get_original_image_from_loader(dataloader, i)
             true_label = labels[i]

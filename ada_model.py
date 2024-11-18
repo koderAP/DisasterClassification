@@ -1,6 +1,7 @@
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.tree import DecisionTreeClassifier
+import tqdm
 
 ada_classifier = AdaBoostClassifier(
     base_estimator=DecisionTreeClassifier(max_depth=2),
@@ -29,7 +30,7 @@ def get_original_image_from_loader(dataloader, idx):
 def get_missclassified_images(ada_classifier, dataloader, features, labels):
     misclassified_images = []
     predictions = ada_classifier.predict(features)
-    for i in range(len(predictions)):
+    for i in tqdm.tqdm(range(len(predictions)), desc="Misclassified images fetching"):
         if predictions[i] != labels[i]:
             image = get_original_image_from_loader(dataloader, i)
             true_label = labels[i]
