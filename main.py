@@ -10,6 +10,8 @@ import t_vision as tv
 import helper as hp
 import os
 from sklearn.metrics import classification_report
+import numpy as np
+import torch
 
 def preprocess_data():
     transform = transforms.Compose([
@@ -35,17 +37,17 @@ def get_data_loaders(train_dataset, val_dataset, batch_size=32):
     return train_loader, val_loader
 
 
-def train_and_evaluate_nn_models(model_names, train_loader, val_loader, criterion, device, num_epochs=10):
+def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10):
     model_names = ["resnet50", "densenet121", "vgg16", "mobilenet_v2", "efficientnet_b0",
                "resnet18", "alexnet", "squeezenet1_0", "shufflenet_v2_x1_0", "googlenet"]
     results = {}
 
     for model_name in model_names:
-        best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores = nnm.train_model_nn(model_name, train_loader, val_loader, criterion, device, num_epochs)
+        best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores = nnm.train_model_nn(model_name, train_loader, val_loader, device, num_epochs)
 
         misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)
         for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
-            image_path = f"misclassified_images/{model_name}/misclassified_{idx}.png"
+            image_path = f"misclassified_images/{model_name}/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
             pil_image = transforms.ToPILImage()(image.cpu())
             pil_image.save(image_path)
 
@@ -96,6 +98,12 @@ def train_and_evaluate_nn_models(model_names, train_loader, val_loader, criterio
         f.write("Validation Classification Report\n")
         f.write(classification_report_val)
 
+    misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)
+    for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
+        image_path = f"misclassified_images/vit_base_patch16_224/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+        pil_image = transforms.ToPILImage()(image.cpu())
+        pil_image.save(image_path)
+
     return results
 
 
@@ -107,6 +115,8 @@ if __name__ == "__main__":
     if len(sys.argv) != 4:
         print("Usage: python main.py <train_directory> <val_directory> <model_type>")
         sys.exit(1)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_directory = sys.argv[1]
     val_directory = sys.argv[2]
@@ -120,15 +130,14 @@ if __name__ == "__main__":
     train_dataset, val_dataset = load_datasets(train_directory, val_directory, transform)
     train_loader, val_loader = get_data_loaders(train_dataset, val_dataset)
 
-    train_features, train_labels = hp.extract_features(train_loader)
-    val_features, val_labels = hp.extract_features(val_loader)
+    train_features, train_labels = hp.extract_features(train_loader, device=device)
+    val_features, val_labels = hp.extract_features(val_loader, device=device)
 
     results = None
 
     if model_type == "nn":
         print("Using Neural Network Model")
-        results = train_and_evaluate_nn_models(["resnet50", "densenet121", "vgg16", "mobilenet_v2", "efficientnet_b0",
-               "resnet18", "alexnet", "squeezenet1_0", "shufflenet_v2_x1_0", "googlenet"], train_loader, val_loader, nnm.criterion, nnm.device, num_epochs=10)
+        results = train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10)
     elif model_type == "svm":
         print("Using Support Vector Machine Model")
         model, train_p, val_p = svm_m.train_model(train_features, train_labels, val_features, val_labels)
