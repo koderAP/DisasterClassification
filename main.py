@@ -12,6 +12,8 @@ import os
 from sklearn.metrics import classification_report
 import numpy as np
 import torch
+from torchvision.utils import save_image
+
 
 def preprocess_data():
     transform = transforms.Compose([
@@ -20,6 +22,8 @@ def preprocess_data():
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
     return transform
+
+
     
 
 def load_datasets(train_dir, val_dir, transform):
@@ -49,8 +53,7 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
         misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)
         for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
             image_path = f"misclassified_images/{model_name}/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
-            pil_image = transforms.ToPILImage()(image.cpu())
-            pil_image.save(image_path)
+            save_image(image, image_path)
 
 
 
@@ -102,8 +105,7 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
     misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)
     for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
         image_path = f"misclassified_images/vit_base_patch16_224/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
-        pil_image = transforms.ToPILImage()(image.cpu())
-        pil_image.save(image_path)
+        save_image(image, image_path)
 
     return results
 
@@ -152,11 +154,10 @@ if __name__ == "__main__":
             f.write("\n\n")
             f.write("Validation Classification Report\n")
             f.write(val_report)
-        images = svm_m.get_missclassified_images(model, val_loader, val_features, val_labels)
-        for i in images:
-            image_path = f"misclassified_images/svm/misclassified_{i}.png"
-            pil_image = transforms.ToPILImage()(images[i][0].cpu())
-            pil_image.save(image_path)
+        misclassified_images = svm_m.get_missclassified_images(model, val_loader, val_features, val_labels)
+        for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
+            image_path = f"misclassified_images/svm/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+            save_image(image, image_path)
 
     elif model_type == "rf":
         print("Using Random Forest Model")
@@ -171,11 +172,10 @@ if __name__ == "__main__":
             f.write("\n\n")
             f.write("Validation Classification Report\n")
             f.write(val_report)
-        images = rf_m.get_missclassified_images(model, val_loader, val_features, val_labels)
-        for i in images:
-            image_path = f"misclassified_images/svm/misclassified_{i}.png"
-            pil_image = transforms.ToPILImage()(images[i][0].cpu())
-            pil_image.save(image_path)
+        misclassified_images = rf_m.get_missclassified_images(model, val_loader, val_features, val_labels)
+        for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
+            image_path = f"misclassified_images/rf/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+            save_image(image, image_path)
     elif model_type == "ada":
         print("Using AdaBoost Model")
         model, train_p, val_p = ada_m.train_model(train_features, train_labels, val_features, val_labels)
@@ -189,11 +189,10 @@ if __name__ == "__main__":
             f.write("\n\n")
             f.write("Validation Classification Report\n")
             f.write(val_report)
-        images = ada_m.get_missclassified_images(model, val_loader, val_features, val_labels)
-        for i in images:
-            image_path = f"misclassified_images/svm/misclassified_{i}.png"
-            pil_image = transforms.ToPILImage()(images[i][0].cpu())
-            pil_image.save(image_path)
+        misclassified_images = ada_m.get_missclassified_images(model, val_loader, val_features, val_labels)
+        for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
+            image_path = f"misclassified_images/ada/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+            save_image(image, image_path)
     else:
         print("Invalid model type. Please use 'nn' or 'svm'")
         sys.exit(1)
