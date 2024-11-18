@@ -21,6 +21,7 @@ def get_original_image_from_loader(dataloader, idx):
     dataset = dataloader.dataset
     image_path, _ = dataset.imgs[idx] 
     image = Image.open(image_path).convert("RGB")
+    print(image)
     image = ToTensor()(image)
     return image
 

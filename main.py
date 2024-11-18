@@ -53,6 +53,7 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
         misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)
         for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
             image_path = f"misclassified_images/{model_name}/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+            os.makedirs(os.path.dirname(image_path), exist_ok=True)
             save_image(image, image_path)
 
 
@@ -105,6 +106,7 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
     misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)
     for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
         image_path = f"misclassified_images/vit_base_patch16_224/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+        os.makedirs(os.path.dirname(image_path), exist_ok=True)
         save_image(image, image_path)
 
     return results
@@ -157,6 +159,7 @@ if __name__ == "__main__":
         misclassified_images = svm_m.get_missclassified_images(model, val_loader, val_features, val_labels)
         for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
             image_path = f"misclassified_images/svm/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+            os.makedirs(os.path.dirname(image_path), exist_ok=True)
             save_image(image, image_path)
 
     elif model_type == "rf":
@@ -175,6 +178,7 @@ if __name__ == "__main__":
         misclassified_images = rf_m.get_missclassified_images(model, val_loader, val_features, val_labels)
         for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
             image_path = f"misclassified_images/rf/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+            os.makedirs(os.path.dirname(image_path), exist_ok=True)
             save_image(image, image_path)
     elif model_type == "ada":
         print("Using AdaBoost Model")
@@ -192,6 +196,7 @@ if __name__ == "__main__":
         misclassified_images = ada_m.get_missclassified_images(model, val_loader, val_features, val_labels)
         for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
             image_path = f"misclassified_images/ada/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
+            os.makedirs(os.path.dirname(image_path), exist_ok=True)
             save_image(image, image_path)
     else:
         print("Invalid model type. Please use 'nn' or 'svm'")
