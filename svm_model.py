@@ -1,6 +1,8 @@
 from sklearn import svm
 import numpy as np
 from PIL import Image
+from torchvision.transforms import ToTensor
+
 
 
 
@@ -19,6 +21,7 @@ def get_original_image_from_loader(dataloader, idx):
     dataset = dataloader.dataset
     image_path, _ = dataset.imgs[idx] 
     image = Image.open(image_path).convert("RGB")
+    image = ToTensor()(image)
     return image
 
 def get_missclassified_images(svm_model, dataloader, features, labels):

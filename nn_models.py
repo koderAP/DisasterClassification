@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch
 from sklearn.metrics import f1_score
 from PIL import Image
+from torchvision.transforms import ToTensor
+
 
 
 def prepare_model(model_name, num_classes=4):
@@ -166,6 +168,7 @@ def get_original_image_from_loader(dataloader, idx):
     dataset = dataloader.dataset
     image_path, _ = dataset.imgs[idx] 
     image = Image.open(image_path).convert("RGB")
+    image = ToTensor()(image)
     return image
 
 def get_misclassified_images(model, data_loader, device):

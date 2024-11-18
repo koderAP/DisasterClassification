@@ -3,6 +3,8 @@ from sklearn.metrics import accuracy_score, classification_report
 import numpy as np
 import tqdm
 from PIL import Image
+from torchvision.transforms import ToTensor
+
 
 
 rf_classifier = RandomForestClassifier(n_estimators=100, max_depth=20, random_state=42)
@@ -19,6 +21,7 @@ def get_original_image_from_loader(dataloader, idx):
     dataset = dataloader.dataset
     image_path, _ = dataset.imgs[idx] 
     image = Image.open(image_path).convert("RGB")
+    image = ToTensor()(image)
     return image
 
 

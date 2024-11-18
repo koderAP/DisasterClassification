@@ -6,6 +6,8 @@ from sklearn.metrics import f1_score
 import numpy as np
 import tqdm
 from PIL import Image
+from torchvision.transforms import ToTensor
+
 
 
 
@@ -96,6 +98,7 @@ def get_original_image_from_loader(dataloader, idx):
     dataset = dataloader.dataset
     image_path, _ = dataset.imgs[idx] 
     image = Image.open(image_path).convert("RGB")
+    image = ToTensor()(image)
     return image
 
 
