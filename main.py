@@ -44,6 +44,7 @@ def get_data_loaders(train_dataset, val_dataset, batch_size=32):
 def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10):
     model_names = ["resnet50", "densenet121", "vgg16", "mobilenet_v2", "efficientnet_b0",
                "resnet18", "alexnet", "squeezenet1_0", "shufflenet_v2_x1_0", "googlenet"]
+    model_names = ["resnet50"]
     results = {}
 
     for model_name in model_names:
@@ -109,6 +110,46 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
         save_image(image, image_path)
 
+
+    import matplotlib.pyplot as plt
+
+    def plot_and_save_results(results):
+        for model_name, metrics in results.items():
+            epochs = range(1, len(metrics["train_losses"]) + 1)
+
+            plt.figure()
+            plt.plot(epochs, metrics["train_losses"], label='Train Loss')
+            plt.plot(epochs, metrics["val_losses"], label='Validation Loss')
+            plt.title(f'{model_name} Loss')
+            plt.xlabel('Epochs')
+            plt.ylabel('Loss')
+            plt.legend()
+            plt.savefig(f'plots/{model_name}_loss.png')
+            plt.close()
+
+            plt.figure()
+            plt.plot(epochs, metrics["train_accuracies"], label='Train Accuracy')
+            plt.plot(epochs, metrics["val_accuracies"], label='Validation Accuracy')
+            plt.title(f'{model_name} Accuracy')
+            plt.xlabel('Epochs')
+            plt.ylabel('Accuracy')
+            plt.legend()
+            plt.savefig(f'plots/{model_name}_accuracy.png')
+            plt.close()
+
+            plt.figure()
+            plt.plot(epochs, metrics["train_f1_scores"], label='Train F1 Score')
+            plt.plot(epochs, metrics["val_f1_scores"], label='Validation F1 Score')
+            plt.title(f'{model_name} F1 Score')
+            plt.xlabel('Epochs')
+            plt.ylabel('F1 Score')
+            plt.legend()
+            plt.savefig(f'plots/{model_name}_f1_score.png')
+            plt.close()
+
+    os.makedirs("plots", exist_ok=True)
+    plot_and_save_results(results)
+
     return results
 
 
@@ -142,7 +183,7 @@ if __name__ == "__main__":
 
     if model_type == "nn":
         print("Using Neural Network Model")
-        results = train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10)
+        results = train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=5)
     elif model_type == "svm":
         print("Using Support Vector Machine Model")
         model, train_p, val_p = svm_m.train_model(train_features, train_labels, val_features, val_labels)

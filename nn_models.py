@@ -91,6 +91,7 @@ def prepare_model(model_name, num_classes=4):
 def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
     model = prepare_model(model_type)
     model.to(device)
+    print(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     train_losses = []
@@ -156,9 +157,8 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
             print(f"Model saved at epoch {epoch + 1}")
             best_model = model
 
-        if not best_model:
-            best_model = model
-
+    if not best_model:
+        best_model = model
 
         
     return best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores
