@@ -4,6 +4,7 @@ import torch
 from sklearn.metrics import f1_score
 from PIL import Image
 from torchvision.transforms import ToTensor
+from tqdm import tqdm
 
 
 
@@ -110,7 +111,8 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
         total = 0
         all_labels = []
         all_predictions = []
-        for i, data in enumerate(train_loader, 0):
+        for i, data in enumerate(tqdm(train_loader, desc="Training", leave=False), 0):
+            print(f"Loss: {running_loss / total}", end='\r')
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
@@ -154,7 +156,7 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
 
         if val_accuracies[-1] == max(val_accuracies):
             torch.save(model.state_dict(), f"{model_type}_best_model.pth")
-            print(f"Model saved at epoch {epoch + 1}")
+            print(f"Model saved at epoch {epoch + 1}, val accuracy: {val_accuracies[-1]}")
             best_model = model
 
     if not best_model:
