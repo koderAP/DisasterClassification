@@ -112,7 +112,6 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
         all_labels = []
         all_predictions = []
         for i, data in enumerate(tqdm(train_loader, desc="Training", leave=False), 0):
-            print(f"Loss: {running_loss / total}", end='\r')
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
