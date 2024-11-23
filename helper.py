@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import numpy as np
+from torchvision.transforms import ToTensor
 
 def extract_features(data_loader, device):
     model = models.resnet50(pretrained=True)
@@ -26,6 +27,8 @@ def extract_features(data_loader, device):
 
 from PIL import Image
 
+
+
 def get_misclassified_images(model, data_loader, device):
     misclassified_images = []
     model.eval()
@@ -42,8 +45,8 @@ def get_misclassified_images(model, data_loader, device):
                 dataset_idx = batch_idx * data_loader.batch_size + idx.item()
 
                 original_image_path = data_loader.dataset.samples[dataset_idx][0]
-                original_image = Image.open(original_image_path)
-
+                original_image = Image.open(original_image_path).convert("RGB")
+                original_image = ToTensor()(original_image)
                 true_label = labels[idx].item()
                 pred_label = predicted[idx].item()
 
