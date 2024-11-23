@@ -5,7 +5,7 @@ from sklearn.metrics import f1_score
 from PIL import Image
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
-from torch.optim import optim
+import torch.optim as optim
 from sklearn.metrics import classification_report
 
 
