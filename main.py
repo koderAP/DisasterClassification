@@ -43,14 +43,13 @@ def get_data_loaders(train_dataset, val_dataset, batch_size=32):
 def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10):
     model_names = ["resnet50", "densenet121", "vgg16", "mobilenet_v2", "efficientnet_b0",
                "resnet18", "alexnet", "squeezenet1_0", "shufflenet_v2_x1_0", "googlenet"]
-    model_names = ["resnet50"]
     results = {}
 
     for model_name in model_names:
         print(f"Training {model_name} model")
         best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores = nnm.train_model_nn(model_name, train_loader, val_loader, device, num_epochs)
 
-        misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)
+        misclassified_images = hp.get_misclassified_images(best_model, val_loader, device)
         for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
             image_path = f"misclassified_images/{model_name}/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
             os.makedirs(os.path.dirname(image_path), exist_ok=True)
@@ -81,7 +80,7 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
             "val_f1_scores": val_f1_scores
         }
 
-    best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores = tv.train_model(train_loader,val_loader, device, epochs=10)
+    best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores = tv.train_model(train_loader,val_loader, device, epochs=num_epochs)
     results["vit_base_patch16_224"] = {
             "train_losses": train_losses,
             "val_losses": val_losses,
@@ -103,7 +102,7 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
         f.write("Validation Classification Report\n")
         f.write(classification_report_val)
 
-    misclassified_images = nnm.get_misclassified_images(best_model, val_loader, device)
+    misclassified_images = hp.get_misclassified_images(best_model, val_loader, device)
     for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
         image_path = f"misclassified_images/vit_base_patch16_224/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
@@ -182,7 +181,7 @@ if __name__ == "__main__":
 
     if model_type == "nn":
         print("Using Neural Network Model")
-        results = train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=5)
+        results = train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10)
     elif model_type == "svm":
         print("Using Support Vector Machine Model")
         model, train_p, val_p = svm_m.train_model(train_features, train_labels, val_features, val_labels)

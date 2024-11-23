@@ -170,6 +170,9 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
     
     print(f"Classification Report for train {model_name}:\n", 
             classification_report(all_labels, all_preds, digits=4))
+    train_f1 = f1_score(all_labels, all_preds, average="weighted")
+    print(f"Train F1 Score for {model_name}: {train_f1:.4f}")
+    
     all_preds, all_labels = [], []
     model.eval()
     with torch.no_grad():
@@ -184,8 +187,7 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
     print(f"Classification Report for val{model_name}:\n", 
             classification_report(all_labels, all_preds, digits=4))
     
-    train_f1 = f1_score(all_labels, all_preds, average="weighted")
-    print(f"Train F1 Score for {model_name}: {train_f1:.4f}")
+
 
     val_f1 = f1_score(all_labels, all_preds, average="weighted")
     
@@ -204,22 +206,7 @@ def get_original_image_from_loader(dataloader, idx):
     image = ToTensor()(image)
     return image
 
-def get_misclassified_images(model, data_loader, device):
-    misclassified_images = []
-    model.eval()
-    with torch.no_grad():
-        for images, labels in data_loader:
-            images = images.to(device)
-            labels = labels.to(device)
-            outputs = model(images)
-            _, predicted = torch.max(outputs, 1)
-            misclassified_idx = (predicted != labels).nonzero()
-            for idx in misclassified_idx:
-                image = get_original_image_from_loader(data_loader, idx)
-                true_label = labels[idx].item()
-                pred_label = predicted[idx].item()
-                misclassified_images.append((image, true_label, pred_label))
-    return misclassified_images
+
 
 
 def get_train_val_predtion(model, train_loader, val_loader, device):
