@@ -2,11 +2,11 @@ import sys
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
-import nn_models as nnm
-import svm_model as svm_m
-import rf_model as rf_m
-import ada_model as ada_m
-import t_vision as tv
+from Models import nn_models as nnm
+from Models import svm_model as svm_m
+from Models import rf_model as rf_m
+from Models import ada_model as ada_m
+from Models import t_vision as tv
 import helper as hp
 import os
 from sklearn.metrics import classification_report
