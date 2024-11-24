@@ -41,7 +41,7 @@ def get_data_loaders(train_dataset, val_dataset, batch_size=32):
 
 
 def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10):
-    model_names = ["resnet50", "densenet121", "vgg16", "mobilenet_v2", "efficientnet_b0",
+    model_names = [ "vit_base_patch16_224","custom_cnn","resnet50", "densenet121", "vgg16", "mobilenet_v2", "efficientnet_b0",
                "resnet18", "alexnet", "squeezenet1_0", "shufflenet_v2_x1_0", "googlenet"]
     results = {}
 
@@ -80,34 +80,7 @@ def train_and_evaluate_nn_models(train_loader, val_loader, device, num_epochs=10
             "val_f1_scores": val_f1_scores
         }
 
-    best_model, train_losses, val_losses, train_accuracies, val_accuracies, train_f1_scores, val_f1_scores = tv.train_model(train_loader,val_loader, device, epochs=num_epochs)
-    results["vit_base_patch16_224"] = {
-            "train_losses": train_losses,
-            "val_losses": val_losses,
-            "train_accuracies": train_accuracies,
-            "val_accuracies": val_accuracies,
-            "train_f1_scores": train_f1_scores,
-            "val_f1_scores": val_f1_scores
-        }
-    train_p, train_l, val_p, val_l = tv.get_train_val_predtion(best_model, train_loader, val_loader, device)
-    model_name = "vit_base_patch16_224"
-    classification_report_train = classification_report(train_l, train_p )
-    classification_report_val = classification_report(val_l, val_p)
-    report_path = f"classification_reports/{model_name}_classification_report.txt"
-    os.makedirs(os.path.dirname(report_path), exist_ok=True)
-    with open(report_path, "w") as f:
-        f.write("Train Classification Report\n")
-        f.write(classification_report_train)
-        f.write("\n\n")
-        f.write("Validation Classification Report\n")
-        f.write(classification_report_val)
-
-    misclassified_images = hp.get_misclassified_images(best_model, val_loader, device)
-    for idx, (image, true_label, pred_label) in enumerate(misclassified_images):
-        image_path = f"misclassified_images/vit_base_patch16_224/misclassified_{idx}_true_{true_label}_got_{pred_label}.png"
-        os.makedirs(os.path.dirname(image_path), exist_ok=True)
-        save_image(image, image_path)
-
+    
 
     import matplotlib.pyplot as plt
 

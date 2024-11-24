@@ -7,6 +7,53 @@ from torchvision.transforms import ToTensor
 from tqdm import tqdm
 import torch.optim as optim
 from sklearn.metrics import classification_report
+import timm
+import torch.nn.functional as F
+
+
+
+
+class SimpleCNN(nn.Module):
+    def __init__(self, num_classes):
+        super(SimpleCNN, self).__init__()
+
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv2d(128, 256, kernel_size=3, padding=1)
+        self.conv4 = nn.Conv2d(256, 1024, kernel_size=3, padding=1)
+
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+
+        self.bn1 = nn.BatchNorm2d(64)
+        self.bn2 = nn.BatchNorm2d(128)
+        self.bn3 = nn.BatchNorm2d(256)
+        self.bn4 = nn.BatchNorm2d(1024)
+
+        self.adaptive_pool = nn.AdaptiveAvgPool2d((4, 4))
+
+        self.fc1 = nn.Linear(1024 * 4 * 4, 512 * 2)
+        self.fc2 = nn.Linear(512 * 2, 128 * 2)
+        self.fc3 = nn.Linear(128 * 2, num_classes)
+
+        self.dropout1 = nn.Dropout(0.7)
+        self.dropout2 = nn.Dropout(0.6)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.bn1(self.conv1(x))))
+        x = self.pool(F.relu(self.bn2(self.conv2(x))))
+        x = self.pool(F.relu(self.bn3(self.conv3(x))))
+        x = self.pool(F.relu(self.bn4(self.conv4(x))))
+
+        x = self.adaptive_pool(x)
+        x = x.view(x.size(0), -1)
+
+        x = self.dropout1(F.relu(self.fc1(x)))
+        x = self.dropout2(F.relu(self.fc2(x)))
+        x = self.fc3(x)
+
+        return x
+
+
 
 
 
@@ -88,6 +135,11 @@ def prepare_model(model_name, num_classes=4):
             nn.Linear(512, num_classes)
         )
 
+    elif model_name == "custom_cnn":
+        model = SimpleCNN(num_classes)
+    elif model_name == "vit_base_patch16_224":
+        model = timm.create_model('vit_base_patch16_224', pretrained=True, num_classes=num_classes)
+
     return model
 
 
@@ -95,6 +147,8 @@ def train_model_nn(model_type, train_loader, val_loader, device, epochs = 10):
     model = prepare_model(model_type)
     model.to(device)
     print(device)
+    if model_type == "custom_cnn":
+        epochs = 20
     model_name = model_type
     num_epochs = epochs
     criterion = nn.CrossEntropyLoss()
