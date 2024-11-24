@@ -4,6 +4,11 @@ This repository implements a project for classifying disaster images into one of
 
 ---
 
+How to run : 
+```
+!python3 main.py <Train_Data_Path> <Val_Data_Path> <method nn or svm or rf or ada>
+```
+
 ## Repository Structure
 
 ```plaintext
