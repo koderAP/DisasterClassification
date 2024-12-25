@@ -1,5 +1,7 @@
 # DisasterClassification
 
+This was course project of ELL409 (2024-25, 1st semester) at IIT Delhi.
+
 ### Dataset Link: [Click here](https://www.kaggle.com/datasets/anubhavpandeyiitd/disasterclassification)
 
 
